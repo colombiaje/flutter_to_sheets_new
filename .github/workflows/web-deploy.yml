@@ -2,7 +2,7 @@ name: Flutter Web Deploy
 
 on:
   push:
-    branches: [ main ]  # Asegúrate de que la rama principal es "main"
+    branches: [ main ]
 
 jobs:
   build:
@@ -14,17 +14,30 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'  # Cambia si usás otra versión
-          channel: 'stable'
+          flutter-version: '3.31.0-0.1.pre'
+          channel: 'beta'
       
+      - name: Debug - List files
+        run: ls -la
+        
+      - name: Clean project
+        run: flutter clean
+        
       - name: Get dependencies
         run: flutter pub get
         
+      - name: Enable web
+        run: flutter config --enable-web
+        
       - name: Build web
         run: flutter build web --release --base-href '/flutter_to_sheets_new/'
+        
+      - name: Debug - List build files
+        run: ls -la build/web
         
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+          force_orphan: true
